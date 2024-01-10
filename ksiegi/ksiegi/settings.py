@@ -21,7 +21,7 @@ DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 ROBOTSTXT_OBEY = True
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 32
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -103,15 +103,17 @@ HTTPERROR_ALLOWED_CODES = [200]
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
-FEED_EXPORT_ENCODING = "utf-8"
 FEEDS = {
-    'items.json': {
+    'ksiegi.jsonl': {
         'format': 'jsonlines',
         'encoding': 'utf8',
-        'store_empty': False,
+        'store_empty': True,
         'item_classes': ['ksiegi.items.KsiegiItem'],
         'fields': ['numerKsiegi', 'polozenieDzialki', 'wlascicielKsiegi', 'numeryDzialek'],
         'indent': 2,
 
     }
 }
+LOG_FILE = 'errorLogs.jsonl'
+LOG_FILE_APPEND = False
+LOG_LEVEL = "ERROR"
