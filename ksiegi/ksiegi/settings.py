@@ -19,7 +19,7 @@ DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
-
+RETRY_TIMES = 10
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 CONCURRENT_REQUESTS = 32
 
@@ -64,6 +64,8 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy_splash.SplashCookiesMiddleware': 723,
     'scrapy_splash.SplashMiddleware': 725,
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,
+    'ksiegi.middlewares.CustomRetryMiddleware': 543,
+
 }
 
 # Enable or disable extensions
@@ -109,11 +111,10 @@ FEEDS = {
         'encoding': 'utf8',
         'store_empty': True,
         'item_classes': ['ksiegi.items.KsiegiItem'],
-        'fields': ['numerKsiegi', 'polozenieDzialki', 'wlascicielKsiegi', 'numeryDzialek'],
+        'fields': ['numerKsiegi', 'polozenieDzialki', 'wlascicielKsiegi', 'numeryDzialek', "errorMessage"],
         'indent': 2,
 
     }
 }
 LOG_FILE = 'errorLogs.jsonl'
-LOG_FILE_APPEND = False
 LOG_LEVEL = "ERROR"

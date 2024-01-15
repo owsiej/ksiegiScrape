@@ -4,6 +4,7 @@
 # https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
 from scrapy import signals
+from scrapy.downloadermiddlewares.retry import RetryMiddleware
 
 # useful for handling different item types with a single interface
 from itemadapter import is_item, ItemAdapter
@@ -101,3 +102,10 @@ class KsiegiDownloaderMiddleware:
 
     def spider_opened(self, spider):
         spider.logger.info("Spider opened: %s" % spider.name)
+
+
+class CustomRetryMiddleware(RetryMiddleware):
+    def process_exception(self, request, exception, spider):
+        if isinstance(exception, self.retry_exception_types):
+            # Log the request arguments when a retry error occurs
+            self.logger.error(f"Retry error for {request.url} with args: {request.meta.splash.args.get('values')}")

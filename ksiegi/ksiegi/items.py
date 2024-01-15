@@ -11,3 +11,4 @@ class KsiegiItem(Item):
     polozenieDzialki = Field()
     wlascicielKsiegi = Field()
     numeryDzialek = Field()
+    errorMessage = Field()

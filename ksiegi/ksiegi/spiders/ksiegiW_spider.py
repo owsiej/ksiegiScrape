@@ -1,9 +1,9 @@
 from scrapy import Spider
 from scrapy_splash import SplashRequest
 from scrapy.selector import Selector
-import re
 
 from .cyfra import znajdzCyfreKontrolna
+from .script import clear_list, find_missing_books
 from ..items import KsiegiItem
 import logging
 
@@ -70,8 +70,11 @@ class KsiegiSpider(Spider):
     def start_requests(self):
         url = "https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW"
         kodWydzialu = "BI1B"
-        for numb in range(67000, 67005):
+        # missingBooks = find_missing_books()
+        # for numb in missingBooks:
+        for numb in range(67500, 68500):
             numerKsiegi = str(numb).zfill(8)
+
             cyfraKontrolna = znajdzCyfreKontrolna(kodWydzialu + numerKsiegi)
             payload = {
                 "kod": kodWydzialu,
@@ -95,23 +98,29 @@ class KsiegiSpider(Spider):
         try:
             numerKsiegi = Selector(text=daneKsiegi).xpath(
                 '//*[@id="content-wrapper"]/div/div[3]/div[1]/div[2]/div/text()').get().strip()
+        except (AttributeError, TypeError):
+            errorInfo = " ".join(clear_list(Selector(text=daneKsiegi).xpath(
+                '//*[@id="content-wrapper"]/div/div[2]/div/p//text()').getall()))
+            wrongKsiega = KsiegiItem()
+            wrongKsiega['numerKsiegi'] = ksiegaPayload
+            wrongKsiega['errorMessage'] = errorInfo
+            yield wrongKsiega
         except Exception as e:
-            numerKsiegi = ksiegaPayload
             self.logger.error(f"Error at numerKsiegi during {ksiegaPayload},{e.__class__}, {e.__doc__}")
-
+            return
         try:
-            polozenie = re.sub(r'\s+', " ", Selector(text=daneKsiegi).xpath(
-                '//*[@id="content-wrapper"]/div/div[3]/div[6]/div[2]/div/p/text()').get().strip())
+            polozenie = clear_list(Selector(text=daneKsiegi).xpath(
+                '//*[@id="content-wrapper"]/div/div[3]/div[6]/div[2]/div/descendant-or-self::*/text()').getall())
         except Exception as e:
-            polozenie = ''
             self.logger.error(f"Error at polozenie during {ksiegaPayload},{e.__class__}, {e.__doc__}")
+            return
 
         try:
-            wlasciciel = Selector(text=daneKsiegi).xpath(
-                '//*[@id="content-wrapper"]/div/div[3]/div[7]/div[2]/div/p/text()').get().strip()
+            wlasciciel = clear_list(Selector(text=daneKsiegi).xpath(
+                '//*[@id="content-wrapper"]/div/div[3]/div[7]/div[2]/div/descendant-or-self::*/text()').getall())
         except Exception as e:
-            wlasciciel = ''
             self.logger.error(f"Error at wlasciciel during {ksiegaPayload},{e.__class__}, {e.__doc__}")
+            return
 
         numeryDzialek = []
         try:
@@ -124,6 +133,7 @@ class KsiegiSpider(Spider):
                     numeryDzialek.append(numer)
         except Exception as e:
             self.logger.error(f"Error at numeryDzialek during {ksiegaPayload},{e.__class__}, {e.__doc__}")
+            return
 
         pelnaKsiega = KsiegiItem()
         pelnaKsiega['numerKsiegi'] = numerKsiegi
