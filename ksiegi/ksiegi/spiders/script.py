@@ -1,6 +1,7 @@
 import re
 import os
 import jsonlines
+import csv
 
 
 def clear_list(lista):
@@ -27,7 +28,7 @@ def find_file_in_parents(filename, start_directory='.'):
         current_dir = parent_dir
 
 
-def find_missing_books():
+def find_missing_books_by_book_file():
     file_path = find_file_in_parents('ksiegi.jsonl')
     if file_path:
         print(f"Found file at: {file_path}")
@@ -39,10 +40,27 @@ def find_missing_books():
     with jsonlines.open(file_path, 'r') as reader:
         for obj in reader:
             allScrapedBooks.append(int(obj['numerKsiegi'].split('/')[1]))
+
     allScrapedBooks.sort()
     for i in range(len(allScrapedBooks) - 1):
         differenceOfAdjacentNumbs = abs(allScrapedBooks[i] - allScrapedBooks[i + 1])
         if differenceOfAdjacentNumbs != 1:
             for y in range(1, differenceOfAdjacentNumbs):
                 missingBooks.append(allScrapedBooks[i] + y)
+    return missingBooks
+
+
+def find_missing_books_by_error_file():
+    file_path = find_file_in_parents('errorLogs.csv')
+    if file_path:
+        print(f"Found file at: {file_path}")
+    else:
+        print("File not found in any parent directory.")
+    missingBooks = []
+
+    with open(file_path, 'r', encoding="utf-8") as reader:
+        csv_reader = csv.reader(reader, delimiter='\n')
+        for obj in csv_reader:
+            missingBooks.append(int(obj[0].split(" ")[-1].split("/")[1]))
+    missingBooks.sort()
     return missingBooks

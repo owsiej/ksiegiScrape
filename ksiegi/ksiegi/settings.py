@@ -101,7 +101,7 @@ DOWNLOADER_MIDDLEWARES = {
 # HTTPCACHE_IGNORE_HTTP_CODES = []
 # HTTPCACHE_STORAGE = "scrapy.extensions.httpcache.FilesystemCacheStorage"
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'
-HTTPERROR_ALLOWED_CODES = [200]
+HTTPERROR_ALLOWED_CODES = [200, 400]
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
@@ -111,10 +111,11 @@ FEEDS = {
         'encoding': 'utf8',
         'store_empty': True,
         'item_classes': ['ksiegi.items.KsiegiItem'],
-        'fields': ['numerKsiegi', 'polozenieDzialki', 'wlascicielKsiegi', 'numeryDzialek', "errorMessage"],
+        'fields': ['numerKsiegi', 'polozenieDzialki', 'wlascicielKsiegi', 'dzialki', "errorMessage", "typKsiegi",
+                   "roszczeniaPrawaOgraniczeniaKsiegi", "hipotekaKsiegi"],
         'indent': 2,
 
     }
 }
-LOG_FILE = 'errorLogs.jsonl'
+LOG_FILE = 'errorLogs.csv'
 LOG_LEVEL = "ERROR"
