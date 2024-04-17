@@ -4,7 +4,7 @@ from scrapy.selector import Selector
 import base64
 
 from .cyfra import znajdzCyfreKontrolna
-from .script import clear_list, find_missing_books_by_book_file, find_missing_books_by_error_file
+from .script import clear_list, find_missing_books_by_database, find_missing_books_by_error_file
 from ..items import KsiegiItem
 import logging
 
@@ -104,9 +104,9 @@ class KsiegiSpider(Spider):
         url = "https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW"
         kodWydzialu = "BI1B"
         handle_httpstatus_list = [400]
-        # missingBooks = find_missing_books_by_book_file()
+        # missingBooks = find_missing_books_by_error_file()
         # for numb in missingBooks:
-        for numb in range(2500, 3000):
+        for numb in range(270000, 272000):
             numerKsiegi = str(numb).zfill(8)
             cyfraKontrolna = znajdzCyfreKontrolna(kodWydzialu + numerKsiegi)
             payload = {
@@ -114,7 +114,6 @@ class KsiegiSpider(Spider):
                 "numer": numerKsiegi,
                 "cyfraKontrolna": cyfraKontrolna,
             }
-
             yield SplashRequest(url, callback=self.parse, endpoint="execute",
                                 args={"lua_source": lua_script,
                                       url: "https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW",

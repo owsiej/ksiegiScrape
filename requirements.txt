@@ -1,3 +1,5 @@
-Scrapy
+Scrapy~=2.11.0
 scrapy_splash
-jsonlines
+pymongo~=4.6.1
+itemadapter~=0.8.0
+python-dotenv~=1.0.1

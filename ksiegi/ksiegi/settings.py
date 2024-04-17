@@ -1,3 +1,8 @@
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
 # Scrapy settings for ksiegi project
 #
 # For simplicity, this file contains only settings considered important or
@@ -11,7 +16,7 @@ BOT_NAME = "ksiegi"
 
 SPIDER_MODULES = ["ksiegi.spiders"]
 NEWSPIDER_MODULE = "ksiegi.spiders"
-SPLASH_URL = 'http://localhost:8050'
+SPLASH_URL = os.getenv("SPLASH_URL")
 DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -21,7 +26,7 @@ DUPEFILTER_CLASS = 'scrapy_splash.SplashAwareDupeFilter'
 ROBOTSTXT_OBEY = True
 RETRY_TIMES = 10
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 5
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
@@ -44,8 +49,6 @@ DEFAULT_REQUEST_HEADERS = {
     "Connection": "keep-alive",
     "Accept-Encoding": "gzip, deflate, br",
     "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
-    "Origin": "https://przegladarka-ekw.ms.gov.pl",
-    "Referer": "https://przegladarka-ekw.ms.gov.pl/eukw_prz/KsiegiWieczyste/wyszukiwanieKW",
     "Content-Type": "application/x-www-form-urlencoded"
 }
 
@@ -76,9 +79,10 @@ DOWNLOADER_MIDDLEWARES = {
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-# ITEM_PIPELINES = {
-#    "ksiegi.pipelines.KsiegiPipeline": 300,
-# }
+ITEM_PIPELINES = {
+    # "ksiegi.pipelines.KsiegiPipeline": 300,
+    "ksiegi.pipelines.MongoPipeline": 700,
+}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -105,17 +109,9 @@ HTTPERROR_ALLOWED_CODES = [200, 400]
 # Set settings whose default value is deprecated to a future-proof value
 REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
-FEEDS = {
-    'ksiegi.jsonl': {
-        'format': 'jsonlines',
-        'encoding': 'utf8',
-        'store_empty': True,
-        'item_classes': ['ksiegi.items.KsiegiItem'],
-        'fields': ['numerKsiegi', 'polozenieDzialki', 'wlascicielKsiegi', 'dzialki', "errorMessage", "typKsiegi",
-                   "roszczeniaPrawaOgraniczeniaKsiegi", "hipotekaKsiegi"],
-        'indent': 2,
 
-    }
-}
-LOG_FILE = 'errorLogs.csv'
+MONGO_URI = os.getenv("MONGO_URL")
+MONGO_DATABASE = os.getenv("MONGO_DATABASE_NAME")
+
+LOG_FILE = os.getenv("LOG_FILE")
 LOG_LEVEL = "ERROR"
